@@ -6,9 +6,9 @@ namespace repRec_api.Controllers;
 [Route("[controller]")]
 public class PlanController : ControllerBase
 {
-    private static readonly string[] WorkoutDays = new[]
+    private static readonly string[] PlanNames = new[]
     {
-        "Leg Day", "Chest Day", "Back Day", "Shoulder Day", "Arm Day"
+        "Push/Pull/Legs", "Upper/Lower", "Full Body", "Bro Split"
     };
 
     private readonly ILogger<PlanController> _logger;
@@ -18,14 +18,17 @@ public class PlanController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet(Name = "GetPlan")]
+    [HttpGet]
     public IEnumerable<Plan> Get()
     {
-        return WorkoutDays.Select(wd => new Plan
+        var res = PlanNames.Select((wd, idx) => new Plan
         {
-            Date = DateOnly.FromDateTime(DateTime.Now.AddDays(Random.Shared.Next(WorkoutDays.Length))),
-            Workout = wd
+            Id = new Random().Next(1000, 9999),
+            Date = DateOnly.FromDateTime(DateTime.Now.AddDays(idx)),
+            Name = wd
         })
         .ToArray();
+
+        return res;
     }
 }
