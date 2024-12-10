@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "name": "C#: repRec-api [https]",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/repRec-api.csproj",
+            "launchConfigurationId": "TargetFramework=;https"
+        }
+    ]
+}
