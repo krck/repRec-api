@@ -32,7 +32,7 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-    app.UseHttpsRedirection();
+    //app.UseHttpsRedirection();
 }
 app.UseRouting();
 app.UseCors(); // CORS: Must be placed after UseRouting and before UseAuthorization
