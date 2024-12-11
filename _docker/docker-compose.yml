@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # Frontend Service
   frontend:
     build:
       context: ../..
@@ -8,11 +9,36 @@ services:
     ports:
       - "80:80"
 
+  # Backend Service
   backend:
     build:
       context: ../..
       dockerfile: repRec-api/_docker/Dockerfile.backend
     ports:
       - "5205:8080"
+    depends_on:
+      - db
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      
+  # PostgreSQL Database Service
+  db:
+    image: postgres:17
+    container_name: postgres_db
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:
+    driver: local
