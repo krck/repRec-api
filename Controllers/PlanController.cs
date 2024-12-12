@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
+using RepRecApi.Models;
 
-namespace repRec_api.Controllers;
+namespace RepRecApi.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class PlanController : ControllerBase
 {
     private static readonly string[] PlanNames = new[]

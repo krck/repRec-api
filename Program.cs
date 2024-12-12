@@ -1,11 +1,16 @@
-var builder = WebApplication.CreateBuilder(args);
+using Microsoft.EntityFrameworkCore;
+using RepRecApi.Database;
+
 
 // --------------------------------------------------------------------------
 // --------------------- Add SERVICES to the container ----------------------
 // --------------------------------------------------------------------------
-builder.Services.AddControllers();
+
+var builder = WebApplication.CreateBuilder(args);
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
 // CORS Policy
 builder.Services.AddCors(options =>
 {
@@ -17,10 +22,20 @@ builder.Services.AddCors(options =>
     });
 });
 
+// setup the EF Postgres database connection
+var movieApiKey = builder.Configuration["DB_CONNECTION_DEV"];
+string? connectionString = builder.Configuration.GetValue<string>("DB_CONNECTION_DEV");
+builder.Services.AddDbContext<RepRecDbContext>(options => options.UseNpgsql(connectionString));
+
+// Add the REST API controllers
+builder.Services.AddControllers();
+
+
 // --------------------------------------------------------------------------
 // ----------------------- Create the WebApplication ------------------------
 // --------------------------------------------------------------------------
 var app = builder.Build();
+
 
 // --------------------------------------------------------------------------
 // --------------------- Add MIDDLEWARE to the pipeline ---------------------

@@ -20,12 +20,8 @@ services:
       - db
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASS=${DB_PASS}
-      
+      - DB_CONNECTION_DEV: ${DB_CONNECTION_DEV}
+
   # PostgreSQL Database Service
   db:
     image: postgres:17

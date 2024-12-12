@@ -16,7 +16,9 @@
         - [3.1.2 Simple SSH connection](#312-simple-ssh-connection)
         - [3.1.3 SSH Key setup and connection](#313-ssh-key-setup-and-connection)
     - [3.2 Firewall](#32-firewall)
-    - [3.3 CI/CD](#33-cicd)
+- [4 Development Workflows](#4-development-workflows)
+    - [4.1 Database](#41-database)
+    - [4.2 CI/CD](#42-cicd)
 
 
 # 1 About
@@ -211,11 +213,37 @@ Activate and check the status
 `ufw enable`
 `ufw status`
 
-## 3.3 CI/CD
 
-There will be no CI/CD setup as of now, but there is a simple server-side refresh script to pull all repos and update the containers
+# 4 Development Workflows
+Recurring workflows during development, from updating the database to updating the live website
 
-Located in the main folder:
+## 4.1 Database
+
+The Entity Framework is used with a Code-First approach, meaning that database changes/updates have to be pushed from the local development machine in this way.
+
+> cmd must be in the main "repRec-api" folder, since relative paths are used
+
+Once database changes have been added to the `RepRecDbContext`, a new migration has to be crated:
+`dotnet-ef migrations add MIGRATION_NAME -o Database/Migrations/`
+
+The new migration can be applied to the database by running:
+`dotnet-ef database update`
+
+Otherwise, migrations can be removed or checked by running (remove always removes the last migration):
+`dotnet-ef migrations remove`
+`dotnet-ef migrations list`
+
+
+## 4.2 CI/CD
+
+There will be no CI/CD setup as of now, but there is a simple server-side refresh script:
+- Pulls all repositories (frontend/backend)
+    - In case of nasty conflicts use `git pull --rebase` manually
+- Shuts down all running containers
+- Forces a full rebuild of all containers with the new code
+- Starts and runs the updated containers (and outputs a list of all running ones)
+
+Located in the main folder on the server:
 `/var/www/repRec/update.sh`
 
 Update script:
@@ -228,8 +256,10 @@ Update script:
 > `# Rebuild and restart containers`
 > `cd /var/www/repRec`
 > `docker-compose -f repRec-api/_docker/docker-compose.yml down -v`
+> `docker-compose -f repRec-api/_docker/docker-compose.yml build --no-cache`
 > `docker-compose -f repRec-api/_docker/docker-compose.yml up -d`
 > `docker-compose -f repRec-api/_docker/docker-compose.yml ps`
+
 
 
 

@@ -1,4 +1,4 @@
-namespace repRec_api;
+namespace RepRecApi.Models;
 
 public class Plan
 {
