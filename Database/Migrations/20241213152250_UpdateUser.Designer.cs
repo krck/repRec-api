@@ -12,8 +12,8 @@ using RepRecApi.Database;
 namespace RepRecApi.Database.Migrations
 {
     [DbContext(typeof(RepRecDbContext))]
-    [Migration("20241212094617_SeedRoles")]
-    partial class SeedRoles
+    [Migration("20241213152250_UpdateUser")]
+    partial class UpdateUser
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -61,17 +61,20 @@ namespace RepRecApi.Database.Migrations
 
             modelBuilder.Entity("RepRecApi.Models.User", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("EmailVerified")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Nickname")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -81,8 +84,8 @@ namespace RepRecApi.Database.Migrations
 
             modelBuilder.Entity("RepRecApi.Models.UserRole", b =>
                 {
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
 
                     b.Property<int>("RoleId")
                         .HasColumnType("integer");

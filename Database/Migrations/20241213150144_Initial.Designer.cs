@@ -12,7 +12,7 @@ using RepRecApi.Database;
 namespace RepRecApi.Database.Migrations
 {
     [DbContext(typeof(RepRecDbContext))]
-    [Migration("20241212094529_Initial")]
+    [Migration("20241213150144_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -40,21 +40,38 @@ namespace RepRecApi.Database.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Admin"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Planner"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "User"
+                        });
                 });
 
             modelBuilder.Entity("RepRecApi.Models.User", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Nickname")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -64,8 +81,8 @@ namespace RepRecApi.Database.Migrations
 
             modelBuilder.Entity("RepRecApi.Models.UserRole", b =>
                 {
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
 
                     b.Property<int>("RoleId")
                         .HasColumnType("integer");

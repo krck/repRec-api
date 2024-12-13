@@ -21,6 +21,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - DB_CONNECTION_DEV: ${DB_CONNECTION_DEV}
+      - API_AUTHORITY: ${API_AUTHORITY}
+      - API_AUDIENCE: ${API_AUDIENCE}
 
   # PostgreSQL Database Service
   db:
