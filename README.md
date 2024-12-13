@@ -19,6 +19,8 @@
 - [4 Development Workflows](#4-development-workflows)
     - [4.1 Database](#41-database)
     - [4.2 CI/CD](#42-cicd)
+    - [4.3 Authentication](#43-authentication)
+    - [4.4 HTTPS](#44-https)
 
 
 # 1 About
@@ -261,11 +263,29 @@ Update script:
 > `docker-compose -f repRec-api/_docker/docker-compose.yml ps`
 
 
+## 4.3 Authentication
+
+Authentication is done via Auth0 (free tier)
+...
+
+## 4.4 HTTPS
+
+To use Auth0 in a dev/prod environment, HTTPS (SSL) certificate is required.
+To configure an SSL certificate, it makes sense to have a fixed domain registered.
+
+Domain certificate setup with `certbot`
+> Certificate location
+> ssl_certificate /etc/letsencrypt/live/www.reprec.com/fullchain.pem;
+> ssl_certificate_key /etc/letsencrypt/live/www.reprec.com/privkey.pem;
+
+Also added `nginx`hosting to the whole VPS, not just within the docker container.
+> nginx config location
+> /etc/nginx/sites-available/default
+
+
 
 
 <b>TODOS:</b>
-- Setup Database
-- Setup HTTPS
-- nginx needed?
 - Harden/Secure Server
-- Setup DEV/PROD env
+- Logging
+- Error Handling

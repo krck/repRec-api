@@ -7,7 +7,9 @@ services:
       context: ../..
       dockerfile: repRec-api/_docker/Dockerfile.frontend
     ports:
-      - "80:80"
+      - "4200:80"
+    networks:
+      - app-network
 
   # Backend Service
   backend:
@@ -20,9 +22,11 @@ services:
       - db
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - DB_CONNECTION_DEV: ${DB_CONNECTION_DEV}
-      - API_AUTHORITY: ${API_AUTHORITY}
-      - API_AUDIENCE: ${API_AUDIENCE}
+      - 'DB_CONNECTION_DEV:${DB_CONNECTION_DEV}'
+      - 'API_AUTHORITY:${API_AUTHORITY}'
+      - 'API_AUDIENCE:${API_AUDIENCE}'
+    networks:
+      - app-network
 
   # PostgreSQL Database Service
   db:
@@ -36,7 +40,13 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    networks:
+      - app-network
 
 volumes:
   postgres_data:
     driver: local
+
+networks:
+  app-network:
+    driver: bridge
