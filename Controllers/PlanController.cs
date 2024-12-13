@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RepRecApi.Models;
 
@@ -20,6 +21,7 @@ public class PlanController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize]
     public IEnumerable<Plan> Get()
     {
         var res = PlanNames.Select((wd, idx) => new Plan

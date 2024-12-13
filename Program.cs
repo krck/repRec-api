@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using RepRecApi.Database;
 
@@ -22,8 +23,37 @@ builder.Services.AddCors(options =>
     });
 });
 
+string? apiAuthority = builder.Configuration.GetValue<string>("API_AUTHORITY");
+string? apiAudience = builder.Configuration.GetValue<string>("API_AUDIENCE");
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Authority = apiAuthority;
+        options.Audience = apiAudience;
+        options.RequireHttpsMetadata = false; // Set to true in production
+        // For debugging:
+        // options.Events = new JwtBearerEvents
+        // {
+        //     OnAuthenticationFailed = context =>
+        //     {
+        //         Console.WriteLine("Authentication failed: " + context.Exception.Message);
+        //         return Task.CompletedTask;
+        //     },
+        //     OnTokenValidated = context =>
+        //     {
+        //         Console.WriteLine("Token validated");
+        //         return Task.CompletedTask;
+        //     },
+        //     OnChallenge = context =>
+        //     {
+        //         Console.WriteLine("Challenge triggered");
+        //         return Task.CompletedTask;
+        //     }
+        // };
+    });
+builder.Services.AddAuthorization();
+
 // setup the EF Postgres database connection
-var movieApiKey = builder.Configuration["DB_CONNECTION_DEV"];
 string? connectionString = builder.Configuration.GetValue<string>("DB_CONNECTION_DEV");
 builder.Services.AddDbContext<RepRecDbContext>(options => options.UseNpgsql(connectionString));
 
@@ -51,7 +81,14 @@ else
 }
 app.UseRouting();
 app.UseCors(); // CORS: Must be placed after UseRouting and before UseAuthorization
+
+app.UseAuthentication();
 app.UseAuthorization();
-app.MapControllers();
+
+app.UseAuthorization();
+app.UseEndpoints(endpoints =>
+{
+    _ = endpoints.MapControllers();
+});
 
 app.Run();

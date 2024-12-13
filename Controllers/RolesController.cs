@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using RepRecApi.Database;
@@ -27,6 +28,7 @@ public class RolesController : ControllerBase
 
     // GET: api/roles/{id}
     [HttpGet("{id}")]
+    [Authorize]
     public async Task<ActionResult<Role>> GetRole(int id)
     {
         var role = await _context.Roles.FindAsync(id);
