@@ -3,8 +3,8 @@ namespace RepRecApi.Models;
 public class UserRole
 {
     public required string UserId { get; set; }
-    public required User User { get; set; }
+    public User? User { get; set; }
 
-    public int RoleId { get; set; }
-    public required Role Role { get; set; }
+    public required int RoleId { get; set; }
+    public Role? Role { get; set; }
 }

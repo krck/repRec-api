@@ -33,6 +33,7 @@ namespace RepRecApi.Database.Migrations
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false),
+                    EmailVerified = table.Column<bool>(type: "boolean", nullable: false),
                     Nickname = table.Column<string>(type: "text", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },

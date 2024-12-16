@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RepRecApi.Common.Attributes;
+using RepRecApi.Common.Enums;
 using RepRecApi.Models;
 
 namespace RepRecApi.Controllers;
@@ -22,6 +24,7 @@ public class PlanController : ControllerBase
 
     [HttpGet]
     [Authorize]
+    [RoleAccess(EnumRoles.Admin, EnumRoles.Planner)]
     public IEnumerable<Plan> Get()
     {
         var res = PlanNames.Select((wd, idx) => new Plan

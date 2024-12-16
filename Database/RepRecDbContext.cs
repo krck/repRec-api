@@ -10,9 +10,13 @@ namespace RepRecApi.Database;
 public class RepRecDbContext(DbContextOptions<RepRecDbContext> options) : DbContext(options)
 // Primary constructor in declaration
 {
-    public required DbSet<User> Users { get; set; }
-    public required DbSet<Role> Roles { get; set; }
-    public required DbSet<UserRole> UserRoles { get; set; }
+#pragma warning disable CS8618 // Non-nullable field 
+
+    public DbSet<User> Users { get; set; }
+    public DbSet<Role> Roles { get; set; }
+    public DbSet<UserRole> UserRoles { get; set; }
+
+#pragma warning restore CS8618 // Non-nullable field
 
     // Configure relationships in OnModelCreating
     protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using RepRecApi.Common.Attributes;
+using RepRecApi.Common.Services;
 using RepRecApi.Database;
 
 
@@ -54,12 +56,23 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 
 // setup the EF Postgres database connection
-string? connectionString = builder.Configuration.GetValue<string>("DB_CONNECTION_DEV");
+string connectionString = builder.Configuration.GetValue<string>("DB_CONNECTION_DEV") ?? "";
 builder.Services.AddDbContext<RepRecDbContext>(options => options.UseNpgsql(connectionString));
 
-// Add the REST API controllers
-builder.Services.AddControllers();
+// Add all DI Services
+builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<IDbService>(new DbService(connectionString));
+builder.Services.AddSingleton<IUserService, UserService>();
+//builder.Services.AddScoped();
+//builder.Services.AddTransient();
 
+// Add the REST API controllers
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
+;
 
 // --------------------------------------------------------------------------
 // ----------------------- Create the WebApplication ------------------------

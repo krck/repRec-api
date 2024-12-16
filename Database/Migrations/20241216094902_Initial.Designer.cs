@@ -12,8 +12,8 @@ using RepRecApi.Database;
 namespace RepRecApi.Database.Migrations
 {
     [DbContext(typeof(RepRecDbContext))]
-    [Migration("20241213152250_UpdateUser")]
-    partial class UpdateUser
+    [Migration("20241216094902_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
