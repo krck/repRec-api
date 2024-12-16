@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using RepRecApi.Common.Attributes;
 using RepRecApi.Common.Services;
 using RepRecApi.Database;
 
@@ -17,11 +16,15 @@ builder.Services.AddOpenApi();
 // CORS Policy
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(policy =>
+    options.AddPolicy("AllowRepRecOrigins", policy =>
     {
-        policy.AllowAnyOrigin()  // Allows any origin (you can restrict this to specific origins)
-              .AllowAnyMethod()  // Allows any HTTP method (GET, POST, PUT, DELETE, etc.)
-              .AllowAnyHeader(); // Allows any HTTP header
+        policy.WithOrigins(
+            "http://localhost:4200",            // Development Frontend
+            "https://www.reprec.de"             // Production Frontend (Domain)
+        )
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials(); // Allow cookies/auth headers if needed
     });
 });
 
@@ -33,25 +36,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.Authority = apiAuthority;
         options.Audience = apiAudience;
         options.RequireHttpsMetadata = false; // Set to true in production
-        // For debugging:
-        // options.Events = new JwtBearerEvents
-        // {
-        //     OnAuthenticationFailed = context =>
-        //     {
-        //         Console.WriteLine("Authentication failed: " + context.Exception.Message);
-        //         return Task.CompletedTask;
-        //     },
-        //     OnTokenValidated = context =>
-        //     {
-        //         Console.WriteLine("Token validated");
-        //         return Task.CompletedTask;
-        //     },
-        //     OnChallenge = context =>
-        //     {
-        //         Console.WriteLine("Challenge triggered");
-        //         return Task.CompletedTask;
-        //     }
-        // };
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                // For debugging:
+                // Console.WriteLine("Authentication failed: " + context.Exception.Message);
+                return Task.CompletedTask;
+            },
+        };
     });
 builder.Services.AddAuthorization();
 
@@ -90,11 +83,10 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-    //app.UseHttpsRedirection();
+    app.UseHttpsRedirection();
 }
 app.UseRouting();
-app.UseCors(); // CORS: Must be placed after UseRouting and before UseAuthorization
-
+app.UseCors("AllowRepRecOrigins"); // CORS: Must be placed after UseRouting and before UseAuthorization
 app.UseAuthentication();
 app.UseAuthorization();
 
