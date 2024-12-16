@@ -21,10 +21,13 @@ services:
     depends_on:
       - db
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - 'DB_CONNECTION_DEV:${DB_CONNECTION_DEV}'
-      - 'API_AUTHORITY:${API_AUTHORITY}'
-      - 'API_AUDIENCE:${API_AUDIENCE}'
+      - ASPNETCORE_ENVIRONMENT=Production
+      - API_LOG_LEVEL=${API_LOG_LEVEL}
+      - API_AUTH_ISSUER=${API_AUTH_ISSUER}
+      - API_AUTH_AUTHORITY=${API_AUTH_AUTHORITY}
+      - API_AUTH_AUDIENCE1=${API_AUTH_AUDIENCE1}
+      - API_AUTH_AUDIENCE2=${API_AUTH_AUDIENCE2}
+      - DB_CONNECTION_DEV=${DB_CONNECTION_DEV}
     networks:
       - app-network
 

@@ -46,30 +46,37 @@ public class UsersController : ControllerBase
     [Authorize]
     public async Task<ActionResult<User>> SetUser(string id, [FromBody] User user)
     {
-        if (user == null)
-            return BadRequest("Invalid data.");
-
-        // Try to find a user and get all the assigned roles as well
-        var dbUser = await _context.Users.Include(u => u.UserRoles).FirstAsync(u => u.Id == user.Id);
-        if (dbUser == null)
+        try
         {
-            // In case User does not already exist: Create new with the default role of "User"
-            dbUser = _context.Users.Add(new User
+            if (user == null)
+                return BadRequest("Invalid data.");
+
+            // Try to find a user and get all the assigned roles as well
+            var dbUser = await _context.Users.Include(u => u.UserRoles).FirstAsync(u => u.Id == user.Id);
+            if (dbUser == null)
             {
-                Id = user.Id,
-                Email = user.Email,
-                EmailVerified = user.EmailVerified,
-                Nickname = user.Nickname,
-                CreatedAt = DateTime.Now.Date.ToUniversalTime(),
-                UserRoles = new List<UserRole> {
+                // In case User does not already exist: Create new with the default role of "User"
+                dbUser = _context.Users.Add(new User
+                {
+                    Id = user.Id,
+                    Email = user.Email,
+                    EmailVerified = user.EmailVerified,
+                    Nickname = user.Nickname,
+                    CreatedAt = DateTime.Now.Date.ToUniversalTime(),
+                    UserRoles = new List<UserRole> {
                     new UserRole { UserId = user.Id, RoleId = (int)EnumRoles.User }
                 }
-            }).Entity;
+                }).Entity;
 
-            await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
+            }
+
+            return Ok(dbUser);
         }
-
-        return Ok(dbUser);
+        catch (System.Exception ex)
+        {
+            return BadRequest(new { except = ex, con = _context.Database.GetConnectionString() });
+        }
     }
 
 }

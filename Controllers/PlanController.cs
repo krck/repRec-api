@@ -25,16 +25,23 @@ public class PlanController : ControllerBase
     [HttpGet]
     [Authorize]
     [RoleAccess(EnumRoles.Admin, EnumRoles.Planner)]
-    public IEnumerable<Plan> Get()
+    public ActionResult<IEnumerable<Plan>> Get()
     {
-        var res = PlanNames.Select((wd, idx) => new Plan
+        try
         {
-            Id = new Random().Next(1000, 9999),
-            Date = DateOnly.FromDateTime(DateTime.Now.AddDays(idx)),
-            Name = wd
-        })
-        .ToArray();
+            var res = PlanNames.Select((wd, idx) => new Plan
+            {
+                Id = new Random().Next(1000, 9999),
+                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(idx)),
+                Name = wd
+            })
+            .ToArray();
 
-        return res;
+            return Ok(res);
+        }
+        catch (System.Exception ex)
+        {
+            return BadRequest(ex);
+        }
     }
 }

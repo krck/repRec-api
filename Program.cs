@@ -9,6 +9,7 @@ using RepRecApi.Database;
 // --------------------------------------------------------------------------
 
 var builder = WebApplication.CreateBuilder(args);
+var isDevEnv = builder.Environment.IsDevelopment();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -28,21 +29,29 @@ builder.Services.AddCors(options =>
     });
 });
 
-string? apiAuthority = builder.Configuration.GetValue<string>("API_AUTHORITY");
-string? apiAudience = builder.Configuration.GetValue<string>("API_AUDIENCE");
+string apiIssuer = builder.Configuration.GetValue<string>("API_AUTH_ISSUER") ?? "";
+string apiAuthority = builder.Configuration.GetValue<string>("API_AUTH_AUTHORITY") ?? "";
+string apiAudience = builder.Configuration.GetValue<string>("API_AUTH_AUDIENCE1") ?? "";
+string apiAudience2 = builder.Configuration.GetValue<string>("API_AUTH_AUDIENCE2") ?? "";
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.Authority = apiAuthority;
         options.Audience = apiAudience;
-        options.RequireHttpsMetadata = false; // Set to true in production
+        options.RequireHttpsMetadata = !isDevEnv; // Set to true in production
+        options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+        {
+            ValidIssuer = apiIssuer, // Ensure this is false for Auth0
+            ValidAudiences = new[] { apiAudience, apiAudience2 } // Add your valid audience(s)
+        };
         options.Events = new JwtBearerEvents
         {
             OnAuthenticationFailed = context =>
             {
-                // For debugging:
+                // For debugging
+                throw new UnauthorizedAccessException("Authentication failed: " + context.Exception.Message);
                 // Console.WriteLine("Authentication failed: " + context.Exception.Message);
-                return Task.CompletedTask;
+                // return Task.CompletedTask;
             },
         };
     });
@@ -77,7 +86,7 @@ var app = builder.Build();
 // --------------------- Add MIDDLEWARE to the pipeline ---------------------
 // --------------------------------------------------------------------------
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (isDevEnv)
 {
     app.MapOpenApi();
 }
