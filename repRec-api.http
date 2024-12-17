@@ -1,0 +1,6 @@
+@repRec_api_HostAddress = http://localhost:5205
+
+GET {{repRec_api_HostAddress}}/Plan/
+Accept: application/json
+
+###
