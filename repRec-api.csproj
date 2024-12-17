@@ -6,9 +6,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>RepRecApi</RootNamespace>
     <UserSecretsId>f3447420-1815-4a2a-a8e5-b03d12b280aa</UserSecretsId>
-    <AssemblyVersion>0.0.0.0</AssemblyVersion>
-    <FileVersion>0.0.0.0</FileVersion>
-    <Version>0.0.0.0</Version> <!-- Version used by Docker and CI/CD -->
+    <AssemblyVersion>0.0.1.0</AssemblyVersion>
+    <FileVersion>0.0.1.0</FileVersion>
+    <Version>0.0.1.0</Version> <!-- Version used by Docker and CI/CD -->
   </PropertyGroup>
 
   <ItemGroup>
