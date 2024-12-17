@@ -15,33 +15,19 @@ public class PlanController : ControllerBase
         "Push/Pull/Legs", "Upper/Lower", "Full Body", "Bro Split"
     };
 
-    private readonly ILogger<PlanController> _logger;
-
-    public PlanController(ILogger<PlanController> logger)
-    {
-        _logger = logger;
-    }
-
     [HttpGet]
     [Authorize]
     [RoleAccess(EnumRoles.Admin, EnumRoles.Planner)]
     public ActionResult<IEnumerable<Plan>> Get()
     {
-        try
+        var res = PlanNames.Select((wd, idx) => new Plan
         {
-            var res = PlanNames.Select((wd, idx) => new Plan
-            {
-                Id = new Random().Next(1000, 9999),
-                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(idx)),
-                Name = wd
-            })
-            .ToArray();
+            Id = new Random().Next(1000, 9999),
+            Date = DateOnly.FromDateTime(DateTime.Now.AddDays(idx)),
+            Name = wd
+        })
+        .ToArray();
 
-            return Ok(res);
-        }
-        catch (System.Exception ex)
-        {
-            return BadRequest(ex);
-        }
+        return Ok(res);
     }
 }

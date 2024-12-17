@@ -15,6 +15,9 @@ public class RepRecDbContext(DbContextOptions<RepRecDbContext> options) : DbCont
     public DbSet<User> Users { get; set; }
     public DbSet<Role> Roles { get; set; }
     public DbSet<UserRole> UserRoles { get; set; }
+    public DbSet<RepRecApi.Models.Log> Logs { get; set; }
+    public DbSet<RepRecApi.Models.LogLevel> LogLevels { get; set; }
+
 
 #pragma warning restore CS8618 // Non-nullable field
 
@@ -34,11 +37,23 @@ public class RepRecDbContext(DbContextOptions<RepRecDbContext> options) : DbCont
             .WithMany(r => r.UserRoles)
             .HasForeignKey(ur => ur.RoleId);
 
+        modelBuilder.Entity<RepRecApi.Models.Log>()
+            .HasOne(l => l.LogLevel)
+            .WithMany(ll => ll.Logs)
+            .HasForeignKey(l => l.LogLevelId);
+
         // Seed all initial/hardcoded values
         modelBuilder.Entity<Role>().HasData(
             new Role { Id = (int)EnumRoles.Admin, Name = EnumRoles.Admin.ToString() },
             new Role { Id = (int)EnumRoles.Planner, Name = EnumRoles.Planner.ToString() },
             new Role { Id = (int)EnumRoles.User, Name = EnumRoles.User.ToString() }
+        );
+        modelBuilder.Entity<RepRecApi.Models.LogLevel>().HasData(
+            new RepRecApi.Models.LogLevel { Id = (int)EnumLogLevels.Debug, Name = EnumLogLevels.Debug.ToString() },
+            new RepRecApi.Models.LogLevel { Id = (int)EnumLogLevels.Info, Name = EnumLogLevels.Info.ToString() },
+            new RepRecApi.Models.LogLevel { Id = (int)EnumLogLevels.Warning, Name = EnumLogLevels.Warning.ToString() },
+            new RepRecApi.Models.LogLevel { Id = (int)EnumLogLevels.Error, Name = EnumLogLevels.Error.ToString() },
+            new RepRecApi.Models.LogLevel { Id = (int)EnumLogLevels.Critical, Name = EnumLogLevels.Critical.ToString() }
         );
     }
 

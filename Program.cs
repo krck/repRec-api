@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using RepRecApi.Common.Middleware;
 using RepRecApi.Common.Services;
 using AspNetCoreRateLimit;
 using RepRecApi.Database;
@@ -78,6 +79,7 @@ builder.Services.AddDbContext<RepRecDbContext>(options => options.UseNpgsql(conn
 builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<IDbService>(new DbService(connectionString));
 builder.Services.AddSingleton<IUserService, UserService>();
+builder.Services.AddSingleton<ILogService, LogService>();
 //builder.Services.AddScoped();
 //builder.Services.AddTransient();
 
@@ -128,6 +130,7 @@ app.UseRouting();
 app.UseIpRateLimiting();
 app.UseSecurityHeaders();
 app.UseCors("AllowRepRecOrigins"); // CORS: Must be placed after UseRouting and before UseAuthorization
+app.UseMiddleware<GlobalExceptionMiddleware>(); // After Routing but before Endpoints
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseEndpoints(endpoints =>

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
@@ -12,19 +13,15 @@ namespace RepRecApi.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly RepRecDbContext _context;
-    private readonly ILogger<PlanController> _logger;
 
-    public UsersController(RepRecDbContext context, ILogger<PlanController> logger)
+    public UsersController(RepRecDbContext context)
     {
         _context = context;
-        _logger = logger;
     }
 
     /// <summary>
     /// GET: api/users/{id}
     /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
     [HttpGet("{id}")]
     [Authorize]
     public async Task<ActionResult<User>> GetUser(string id)
@@ -39,44 +36,34 @@ public class UsersController : ControllerBase
     /// Set User information (Name, Email)
     /// This is called on every new login to initially create or update (keep up-to-date) the user information
     /// </summary>
-    /// <param name="id"></param>
-    /// <param name="user"></param>
-    /// <returns></returns>
     [HttpPost("{id}")]
     [Authorize]
-    public async Task<ActionResult<User>> SetUser(string id, [FromBody] User user)
+    public async Task<ActionResult<User>> SetUser([FromBody] User user)
     {
-        try
-        {
-            if (user == null)
-                return BadRequest("Invalid data.");
+        if (user == null)
+            throw new ValidationException("User object is required");
 
-            // Try to find a user and get all the assigned roles as well
-            var dbUser = await _context.Users.Include(u => u.UserRoles).FirstAsync(u => u.Id == user.Id);
-            if (dbUser == null)
+        // Try to find a user and get all the assigned roles as well
+        var dbUser = await _context.Users.Include(u => u.UserRoles).FirstAsync(u => u.Id == user.Id);
+        if (dbUser == null)
+        {
+            // In case User does not already exist: Create new with the default role of "User"
+            dbUser = _context.Users.Add(new User
             {
-                // In case User does not already exist: Create new with the default role of "User"
-                dbUser = _context.Users.Add(new User
-                {
-                    Id = user.Id,
-                    Email = user.Email,
-                    EmailVerified = user.EmailVerified,
-                    Nickname = user.Nickname,
-                    CreatedAt = DateTime.Now.Date.ToUniversalTime(),
-                    UserRoles = new List<UserRole> {
+                Id = user.Id,
+                Email = user.Email,
+                EmailVerified = user.EmailVerified,
+                Nickname = user.Nickname,
+                CreatedAt = DateTime.Now.Date.ToUniversalTime(),
+                UserRoles = new List<UserRole> {
                     new UserRole { UserId = user.Id, RoleId = (int)EnumRoles.User }
                 }
-                }).Entity;
+            }).Entity;
 
-                await _context.SaveChangesAsync();
-            }
+            await _context.SaveChangesAsync();
+        }
 
-            return Ok(dbUser);
-        }
-        catch (System.Exception ex)
-        {
-            return BadRequest(new { except = ex, con = _context.Database.GetConnectionString() });
-        }
+        return Ok(dbUser);
     }
 
 }

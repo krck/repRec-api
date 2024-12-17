@@ -11,22 +11,24 @@ namespace RepRecApi.Controllers;
 public class RolesController : ControllerBase
 {
     private readonly RepRecDbContext _context;
-    private readonly ILogger<PlanController> _logger;
 
-    public RolesController(RepRecDbContext context, ILogger<PlanController> logger)
+    public RolesController(RepRecDbContext context)
     {
         _context = context;
-        _logger = logger;
     }
 
-    // GET: api/roles
+    /// <summary>
+    /// GET: api/roles
+    /// </summary>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Role>>> GetRoles()
     {
         return await _context.Roles.ToListAsync();
     }
 
-    // GET: api/roles/{id}
+    /// <summary>
+    /// GET: api/roles/{id}
+    /// </summary>
     [HttpGet("{id}")]
     [Authorize]
     public async Task<ActionResult<Role>> GetRole(int id)

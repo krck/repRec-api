@@ -2,12 +2,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace RepRecApi.Models;
 
-public class Role
+public class LogLevel
 {
     [Key]
-    public int Id { get; set; }
+    public required int Id { get; set; }
 
     public required string Name { get; set; }
 
-    public ICollection<UserRole>? UserRoles { get; set; } // Navigation property
+    public ICollection<Log>? Logs { get; set; } // Navigation property
 }
