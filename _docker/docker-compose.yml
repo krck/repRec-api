@@ -18,8 +18,11 @@ services:
       dockerfile: repRec-api/_docker/Dockerfile.backend
     ports:
       - "5205:8080"
-    depends_on:
-      - db
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - API_LOG_LEVEL=${API_LOG_LEVEL}
@@ -27,9 +30,11 @@ services:
       - API_AUTH_AUTHORITY=${API_AUTH_AUTHORITY}
       - API_AUTH_AUDIENCE1=${API_AUTH_AUDIENCE1}
       - API_AUTH_AUDIENCE2=${API_AUTH_AUDIENCE2}
-      - DB_CONNECTION_DEV=${DB_CONNECTION_DEV}
+      - 'DB_CONNECTION_DEV=${DB_CONNECTION_DEV}'
     networks:
       - app-network
+    depends_on:
+      - db
 
   # PostgreSQL Database Service
   db:

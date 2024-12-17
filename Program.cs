@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using RepRecApi.Common.Services;
+using AspNetCoreRateLimit;
 using RepRecApi.Database;
 
 
@@ -13,6 +14,9 @@ var isDevEnv = builder.Environment.IsDevelopment();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+// Security Headers
+builder.Services.AddSecurityHeaderPolicies();
 
 // CORS Policy
 builder.Services.AddCors(options =>
@@ -29,6 +33,7 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Authentication and Authorization
 string apiIssuer = builder.Configuration.GetValue<string>("API_AUTH_ISSUER") ?? "";
 string apiAuthority = builder.Configuration.GetValue<string>("API_AUTH_AUTHORITY") ?? "";
 string apiAudience = builder.Configuration.GetValue<string>("API_AUTH_AUDIENCE1") ?? "";
@@ -57,6 +62,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 builder.Services.AddAuthorization();
 
+// Secure Cookies (for Authentication)
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.Strict;
+});
+
 // setup the EF Postgres database connection
 string connectionString = builder.Configuration.GetValue<string>("DB_CONNECTION_DEV") ?? "";
 builder.Services.AddDbContext<RepRecDbContext>(options => options.UseNpgsql(connectionString));
@@ -67,6 +80,22 @@ builder.Services.AddSingleton<IDbService>(new DbService(connectionString));
 builder.Services.AddSingleton<IUserService, UserService>();
 //builder.Services.AddScoped();
 //builder.Services.AddTransient();
+
+// Add RateLimiting
+builder.Services.Configure<IpRateLimitOptions>(options =>
+{
+    options.GeneralRules = new List<RateLimitRule>
+    {
+        new RateLimitRule
+        {
+            Endpoint = "*",
+            Period = "10s",
+            Limit = 50
+        }
+    };
+});
+builder.Services.AddInMemoryRateLimiting();
+builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
 
 // Add the REST API controllers
 builder.Services.AddControllers()
@@ -93,12 +122,13 @@ if (isDevEnv)
 else
 {
     app.UseHttpsRedirection();
+    app.UseHsts();
 }
 app.UseRouting();
+app.UseIpRateLimiting();
+app.UseSecurityHeaders();
 app.UseCors("AllowRepRecOrigins"); // CORS: Must be placed after UseRouting and before UseAuthorization
 app.UseAuthentication();
-app.UseAuthorization();
-
 app.UseAuthorization();
 app.UseEndpoints(endpoints =>
 {

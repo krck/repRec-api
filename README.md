@@ -11,16 +11,16 @@
         - [2.3.2 Backend Container](#232-backend-container)
         - [2.3.3 All Containers](#233-all-containers)
 - [3 Server Setup](#3-server-setup)
-    - [3.1 SSH](#31-ssh)
-        - [3.1.1 SSH Setup](#311-ssh-setup)
-        - [3.1.2 Simple SSH connection](#312-simple-ssh-connection)
-        - [3.1.3 SSH Key setup and connection](#313-ssh-key-setup-and-connection)
-    - [3.2 Firewall](#32-firewall)
+    - [3.1 Firewall](#31-firewall)
+    - [3.2 SSH](#32-ssh)
+        - [3.2.1 SSH Setup](#321-ssh-setup)
+        - [3.2.2 Simple SSH connection](#322-simple-ssh-connection)
+        - [3.2.3 SSH Key setup and connection](#323-ssh-key-setup-and-connection)
+    - [3.3 HTTPS/SSL Cert](#33-httpsssl-cert)
 - [4 Development Workflows](#4-development-workflows)
     - [4.1 Database](#41-database)
     - [4.2 CI/CD](#42-cicd)
     - [4.3 Authentication](#43-authentication)
-    - [4.4 HTTPS](#44-https)
 
 
 # 1 About
@@ -140,10 +140,34 @@ From this main folder, the docker containers will be run.
 `docker-compose -f repRec-api/_docker/docker-compose.yml up -d`
 `docker-compose logs -f`
 
+For general Security purposes, keep the Server up-to-date:
+`apt update && sudo apt upgrade -y`
 
-## 3.1 SSH
+> Critical updates can also be automated
+> `apt install unattended-upgrades`
+> `dpkg-reconfigure --priority=low unattended-upgrades`
 
-### 3.1.1 SSH Setup
+
+## 3.1 Firewall
+
+Install the ufw (Uncomplicated Firewall) tool
+`apt install ufw -y`
+
+Configure firewall rules for ssh and web-hosting
+`ufw allow 22/tcp      # Allow SSH`
+`ufw allow 80/tcp      # Allow HTTP` (optional / only as long as HTTPS/SSL is not configured)
+`ufw allow 443/tcp     # Allow HTTPS`
+`ufw allow 5432/tcp    # Allow PostgreSQL`
+`ufw default deny incoming` (deny ALL incoming that are not specifically allowed - should be default anyway)
+
+Activate and check the status
+`ufw enable`
+`ufw status verbose`
+
+
+## 3.2 SSH
+
+### 3.2.1 SSH Setup
 
 Install SSH on the server side (allows the server to accept connections)
 `apt install openssh-server`
@@ -156,12 +180,12 @@ Enable SSH services, activate on boot and verify if its running
 `systemctl enable ssh`
 `systemctl status ssh`
 
-### 3.1.2 Simple SSH connection
+### 3.2.2 Simple SSH connection
 
 Simple ssh connect to the server from the client, with username and password
 `ssh login-user@server-ip`
 
-### 3.1.3 SSH Key setup and connection
+### 3.2.3 SSH Key setup and connection
 
 Create a local ssh key
 `ssh-keygen -t rsa -b 4096`
@@ -174,7 +198,7 @@ Copy the public key to the VPS
 Test the connection: This should now work, without requiring a password
 `ssh login-user@server-ip`
 
-### 3.1.4 Secure the SSH connection (no more PW login)
+### 3.2.4 Secure the SSH connection (no more PW login)
 
 Update the Firewall to allow a new port (optional but recommended)
 `ufw allow 2222`
@@ -200,24 +224,30 @@ Test the secure connection
 To verify that password login is disabled: Try connecting without your SSH key. It should fail.
 
 
-## 3.2 Firewall
+## 3.3 HTTPS/SSL Cert
 
-Install the ufw (Uncomplicated Firewall) tool
-`apt install ufw -y`
+To use Auth0 in a dev/prod environment, HTTPS (SSL) certificate is required.
+To configure an SSL certificate, it makes sense to have a fixed domain registered.
 
-Configure firewall rules for ssh and web-hosting
-`ufw allow OpenSSH`
-`ufw allow ssh`
-`ufw allow 80`
-`ufw allow 443`
+Domain certificate setup with `certbot`
+> Certificate location
+> ssl_certificate /etc/letsencrypt/live/www.reprec.com/fullchain.pem;
+> ssl_certificate_key /etc/letsencrypt/live/www.reprec.com/privkey.pem;
 
-Activate and check the status
-`ufw enable`
-`ufw status`
+Also added `nginx`hosting to the whole VPS, not just within the docker container.
+> nginx config location
+> /etc/nginx/sites-available/default
+
 
 
 # 4 Development Workflows
-Recurring workflows during development, from updating the database to updating the live website
+Recurring workflows during development, from updating the database to updating the live website.
+
+For "on VPS" debugging into the running docker containers use
+
+`docker ps -a` (to get the container id)
+`docker logs <container id>` (to view all console/error outputs)
+
 
 ## 4.1 Database
 
@@ -267,25 +297,3 @@ Update script:
 
 Authentication is done via Auth0 (free tier)
 ...
-
-## 4.4 HTTPS
-
-To use Auth0 in a dev/prod environment, HTTPS (SSL) certificate is required.
-To configure an SSL certificate, it makes sense to have a fixed domain registered.
-
-Domain certificate setup with `certbot`
-> Certificate location
-> ssl_certificate /etc/letsencrypt/live/www.reprec.com/fullchain.pem;
-> ssl_certificate_key /etc/letsencrypt/live/www.reprec.com/privkey.pem;
-
-Also added `nginx`hosting to the whole VPS, not just within the docker container.
-> nginx config location
-> /etc/nginx/sites-available/default
-
-
-
-
-<b>TODOS:</b>
-- Harden/Secure Server
-- Logging
-- Error Handling
