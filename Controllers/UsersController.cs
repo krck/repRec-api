@@ -56,7 +56,8 @@ public class UsersController : ControllerBase
                 Nickname = user.Nickname,
                 CreatedAt = DateTime.Now.Date.ToUniversalTime(),
                 UserRoles = new List<UserRole> {
-                    new UserRole { UserId = user.Id, RoleId = (int)EnumRoles.User }
+                    new UserRole { UserId = user.Id, RoleId = (int)EnumRoles.User },
+                    new UserRole { UserId = user.Id, RoleId = (int)EnumRoles.Planner }
                 }
             }).Entity;
 
