@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
 
 [ApiController]
-[Route("api/version")]
+[Route("api/[controller]")]
 public class VersionController : ControllerBase
 {
     [HttpGet]

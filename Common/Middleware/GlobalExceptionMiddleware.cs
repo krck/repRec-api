@@ -9,7 +9,6 @@ public class GlobalExceptionMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogService _logService;
-    private readonly string _auth0UserIdClaim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier";
 
     public GlobalExceptionMiddleware(RequestDelegate next, ILogService logService)
     {
@@ -28,7 +27,7 @@ public class GlobalExceptionMiddleware
         catch (Exception ex)
         {
             // Log the exception
-            string? userId = context.User.Claims.FirstOrDefault(c => c.Type == _auth0UserIdClaim)?.Value;
+            string? userId = context.User.Claims.FirstOrDefault(c => c.Type == GlobalStaticVariables.Auth0UserIdClaim)?.Value;
             await _logService.LogExceptionAsync(ex, userId);
 
             // Create the response
