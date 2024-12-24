@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RepRecApi.Database;
@@ -11,9 +12,11 @@ using RepRecApi.Database;
 namespace RepRecApi.Database.Migrations
 {
     [DbContext(typeof(RepRecDbContext))]
-    partial class RepRecDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241223074706_OptExercise")]
+    partial class OptExercise
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -111,6 +114,9 @@ namespace RepRecApi.Database.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Category")
+                        .HasColumnType("text");
+
                     b.Property<string>("Equipment")
                         .HasColumnType("text");
 
@@ -121,18 +127,15 @@ namespace RepRecApi.Database.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Level")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Mechanic")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<int>("OptExerciseCategoryId")
-                        .HasColumnType("integer");
 
                     b.Property<string>("PrimaryMuscles")
                         .IsRequired()
@@ -143,91 +146,7 @@ namespace RepRecApi.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OptExerciseCategoryId");
-
                     b.ToTable("OptExercises");
-                });
-
-            modelBuilder.Entity("RepRecApi.Models.OptExerciseCategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<string>("JsonTemplate")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("OptExerciseCategories");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Bodybuilding and Power-Lifting exercises",
-                            JsonTemplate = "[]",
-                            Name = "Weightlifting"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Snatch, Clean & Jerk, etc.",
-                            JsonTemplate = "[]",
-                            Name = "Olympic Lifting"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Description = "Atlas Stones, Tire Flips, etc.",
-                            JsonTemplate = "[]",
-                            Name = "Strongman"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Description = "Box Jumps, Jump Squats, etc.",
-                            JsonTemplate = "[]",
-                            Name = "Plyometrics"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Description = "Static, Dynamic, PNF, etc.",
-                            JsonTemplate = "[]",
-                            Name = "Stretching"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Description = "All Forms of Cardio",
-                            JsonTemplate = "[]",
-                            Name = "Endurance Training"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Description = "Yoga, Pilates, Calisthenics, Courses, etc.",
-                            JsonTemplate = "[]",
-                            Name = "Physical Exercises"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Description = "Hiking, Swimming, Bouldering, Outdoor, etc.",
-                            JsonTemplate = "[]",
-                            Name = "Other Activities"
-                        });
                 });
 
             modelBuilder.Entity("RepRecApi.Models.Role", b =>
@@ -313,17 +232,6 @@ namespace RepRecApi.Database.Migrations
                     b.Navigation("LogLevel");
                 });
 
-            modelBuilder.Entity("RepRecApi.Models.OptExercise", b =>
-                {
-                    b.HasOne("RepRecApi.Models.OptExerciseCategory", "OptExerciseCategory")
-                        .WithMany("OptExercises")
-                        .HasForeignKey("OptExerciseCategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("OptExerciseCategory");
-                });
-
             modelBuilder.Entity("RepRecApi.Models.UserRole", b =>
                 {
                     b.HasOne("RepRecApi.Models.Role", "Role")
@@ -346,11 +254,6 @@ namespace RepRecApi.Database.Migrations
             modelBuilder.Entity("RepRecApi.Models.LogLevel", b =>
                 {
                     b.Navigation("Logs");
-                });
-
-            modelBuilder.Entity("RepRecApi.Models.OptExerciseCategory", b =>
-                {
-                    b.Navigation("OptExercises");
                 });
 
             modelBuilder.Entity("RepRecApi.Models.Role", b =>

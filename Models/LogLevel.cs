@@ -9,5 +9,6 @@ public class LogLevel
 
     public required string Name { get; set; }
 
-    public ICollection<Log>? Logs { get; set; } // Navigation property
+    // Navigation properties / Foreign Key connections
+    public ICollection<Log>? Logs { get; set; }
 }

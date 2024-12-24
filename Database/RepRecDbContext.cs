@@ -12,11 +12,16 @@ public class RepRecDbContext(DbContextOptions<RepRecDbContext> options) : DbCont
 {
 #pragma warning disable CS8618 // Non-nullable field 
 
+    // CORE System Tables
     public DbSet<User> Users { get; set; }
     public DbSet<Role> Roles { get; set; }
     public DbSet<UserRole> UserRoles { get; set; }
     public DbSet<RepRecApi.Models.Log> Logs { get; set; }
     public DbSet<RepRecApi.Models.LogLevel> LogLevels { get; set; }
+
+    // OPTIONS / Dropdown Tables
+    public DbSet<OptExerciseCategory> OptExerciseCategories { get; set; }
+    public DbSet<OptExercise> OptExercises { get; set; }
 
 
 #pragma warning restore CS8618 // Non-nullable field
@@ -42,6 +47,11 @@ public class RepRecDbContext(DbContextOptions<RepRecDbContext> options) : DbCont
             .WithMany(ll => ll.Logs)
             .HasForeignKey(l => l.LogLevelId);
 
+        modelBuilder.Entity<OptExercise>()
+            .HasOne(e => e.OptExerciseCategory)
+            .WithMany(c => c.OptExercises)
+            .HasForeignKey(e => e.OptExerciseCategoryId);
+
         // Seed all initial/hardcoded values
         modelBuilder.Entity<Role>().HasData(
             new Role { Id = (int)EnumRoles.Admin, Name = EnumRoles.Admin.ToString() },
@@ -54,6 +64,78 @@ public class RepRecDbContext(DbContextOptions<RepRecDbContext> options) : DbCont
             new RepRecApi.Models.LogLevel { Id = (int)EnumLogLevels.Warning, Name = EnumLogLevels.Warning.ToString() },
             new RepRecApi.Models.LogLevel { Id = (int)EnumLogLevels.Error, Name = EnumLogLevels.Error.ToString() },
             new RepRecApi.Models.LogLevel { Id = (int)EnumLogLevels.Critical, Name = EnumLogLevels.Critical.ToString() }
+        );
+        modelBuilder.Entity<OptExerciseCategory>().HasData(
+            new OptExerciseCategory
+            {
+                Id = (int)EnumExerciseCategories.Weightlifting,
+                Name = EnumExerciseCategories.Weightlifting.ToString().Replace("_", " "),
+                Description = "Bodybuilding and Power-Lifting exercises",
+                JsonTemplate = "[]"
+            }
+        );
+        modelBuilder.Entity<OptExerciseCategory>().HasData(
+            new OptExerciseCategory
+            {
+                Id = (int)EnumExerciseCategories.Olympic_Lifting,
+                Name = EnumExerciseCategories.Olympic_Lifting.ToString().Replace("_", " "),
+                Description = "Snatch, Clean & Jerk, etc.",
+                JsonTemplate = "[]"
+            }
+        );
+        modelBuilder.Entity<OptExerciseCategory>().HasData(
+            new OptExerciseCategory
+            {
+                Id = (int)EnumExerciseCategories.Strongman,
+                Name = EnumExerciseCategories.Strongman.ToString().Replace("_", " "),
+                Description = "Atlas Stones, Tire Flips, etc.",
+                JsonTemplate = "[]"
+            }
+        );
+        modelBuilder.Entity<OptExerciseCategory>().HasData(
+            new OptExerciseCategory
+            {
+                Id = (int)EnumExerciseCategories.Plyometrics,
+                Name = EnumExerciseCategories.Plyometrics.ToString().Replace("_", " "),
+                Description = "Box Jumps, Jump Squats, etc.",
+                JsonTemplate = "[]"
+            }
+        );
+        modelBuilder.Entity<OptExerciseCategory>().HasData(
+            new OptExerciseCategory
+            {
+                Id = (int)EnumExerciseCategories.Stretching,
+                Name = EnumExerciseCategories.Stretching.ToString().Replace("_", " "),
+                Description = "Static, Dynamic, PNF, etc.",
+                JsonTemplate = "[]"
+            }
+        );
+        modelBuilder.Entity<OptExerciseCategory>().HasData(
+            new OptExerciseCategory
+            {
+                Id = (int)EnumExerciseCategories.Endurance_Training,
+                Name = EnumExerciseCategories.Endurance_Training.ToString().Replace("_", " "),
+                Description = "All Forms of Cardio",
+                JsonTemplate = "[]"
+            }
+        );
+        modelBuilder.Entity<OptExerciseCategory>().HasData(
+            new OptExerciseCategory
+            {
+                Id = (int)EnumExerciseCategories.Physical_Exercises,
+                Name = EnumExerciseCategories.Physical_Exercises.ToString().Replace("_", " "),
+                Description = "Yoga, Pilates, Calisthenics, Courses, etc.",
+                JsonTemplate = "[]"
+            }
+        );
+        modelBuilder.Entity<OptExerciseCategory>().HasData(
+            new OptExerciseCategory
+            {
+                Id = (int)EnumExerciseCategories.Other_Activities,
+                Name = EnumExerciseCategories.Other_Activities.ToString().Replace("_", " "),
+                Description = "Hiking, Swimming, Bouldering, Outdoor, etc.",
+                JsonTemplate = "[]"
+            }
         );
     }
 

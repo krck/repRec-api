@@ -12,5 +12,6 @@ public class User
     public string? Nickname { get; set; }
     public required DateTime CreatedAt { get; set; }
 
-    public ICollection<UserRole>? UserRoles { get; set; } // Navigation property
+    // Navigation properties / Foreign Key connections
+    public ICollection<UserRole>? UserRoles { get; set; }
 }
