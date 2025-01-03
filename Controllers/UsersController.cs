@@ -1,10 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using RepRecApi.Common.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using RepRecApi.Common.Enums;
 using RepRecApi.Database;
 using RepRecApi.Models;
+using RepRecApi.Common;
 
 namespace RepRecApi.Controllers;
 
@@ -20,14 +22,17 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    /// GET: api/users/{id}
+    /// GET: api/users
+    /// 
+    /// Get all Users with their assigned Roles
+    /// (This is only available to Admins)
     /// </summary>
-    [HttpGet("{id}")]
+    [HttpGet]
     [Authorize]
-    public async Task<ActionResult<User>> GetUser(string id)
+    [RoleAccess(EnumRoles.Admin)]
+    public async Task<ActionResult<IEnumerable<User>>> GetUsers()
     {
-        var dbUser = await _context.Users.Include(u => u.UserRoles).FirstAsync(u => u.Id == id);
-        return (dbUser == null) ? NotFound() : Ok(dbUser);
+        return await _context.Users.Include(u => u.UserRoles).ToListAsync();
     }
 
     /// <summary>
@@ -43,11 +48,18 @@ public class UsersController : ControllerBase
         if (user == null)
             throw new ValidationException("User object is required");
 
+        // Access the HttpContext to check the User ID, based on the JWT Auth0 Token/Claims
+        // !!! EVERYONE CAN ACCESS THIS ENDPOINT BUT USERS CAN ONLY CHANGE THEIR OWN DATA !!!
+        string? httpUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == GlobalStaticVariables.Auth0UserIdClaim)?.Value;
+        if (httpUserId == null || httpUserId != user.Id)
+            throw new ValidationException("User object is invalid");
+
         // Try to find a user and get all the assigned roles as well
         var dbUser = await _context.Users.Include(u => u.UserRoles).FirstAsync(u => u.Id == user.Id);
+
+        // In case User does not already exist: Create new with the default role of "User"
         if (dbUser == null)
         {
-            // In case User does not already exist: Create new with the default role of "User"
             dbUser = _context.Users.Add(new User
             {
                 Id = user.Id,
@@ -56,10 +68,20 @@ public class UsersController : ControllerBase
                 Nickname = user.Nickname,
                 CreatedAt = DateTime.Now.Date.ToUniversalTime(),
                 UserRoles = new List<UserRole> {
-                    new UserRole { UserId = user.Id, RoleId = (int)EnumRoles.User }
+                    new UserRole { UserId = user.Id, RoleId = (int)EnumRoles.User },
+                    new UserRole { UserId = user.Id, RoleId = (int)EnumRoles.Planner }
                 }
             }).Entity;
 
+            await _context.SaveChangesAsync();
+        }
+
+        // In case the User exists, but any data has changed: Update the User
+        if (dbUser.Email != user.Email || dbUser.Nickname != user.Nickname || !dbUser.EmailVerified)
+        {
+            dbUser.Email = user.Email;
+            dbUser.EmailVerified = user.EmailVerified;
+            dbUser.Nickname = user.Nickname;
             await _context.SaveChangesAsync();
         }
 

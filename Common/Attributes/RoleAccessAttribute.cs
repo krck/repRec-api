@@ -7,7 +7,6 @@ namespace RepRecApi.Common.Attributes;
 
 public class RoleAccessAttribute : Attribute, IAsyncActionFilter
 {
-    private readonly string _auth0UserIdClaim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier";
     private readonly EnumRoles[] _roles;
 
     public RoleAccessAttribute(params EnumRoles[] roles)
@@ -17,7 +16,7 @@ public class RoleAccessAttribute : Attribute, IAsyncActionFilter
 
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-        var userId = context.HttpContext.User.Claims.FirstOrDefault(c => c.Type == _auth0UserIdClaim)?.Value;
+        var userId = context.HttpContext.User.Claims.FirstOrDefault(c => c.Type == GlobalStaticVariables.Auth0UserIdClaim)?.Value;
         if (userId == null)
         {
             context.Result = new UnauthorizedResult(); // Unauthorized

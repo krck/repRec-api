@@ -9,5 +9,6 @@ public class Role
 
     public required string Name { get; set; }
 
-    public ICollection<UserRole>? UserRoles { get; set; } // Navigation property
+    // Navigation properties / Foreign Key connections
+    public ICollection<UserRole>? UserRoles { get; set; }
 }

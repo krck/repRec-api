@@ -17,5 +17,6 @@ public class Log
     public string? Source { get; set; } // Optional: where the error occurred
     public string? userId { get; set; }
 
-    public LogLevel? LogLevel { get; set; } // Navigation property
+    // Navigation properties / Foreign Key connections
+    public LogLevel? LogLevel { get; set; }
 }
