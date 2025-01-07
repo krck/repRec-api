@@ -14,4 +14,7 @@ public class User
 
     // Navigation properties / Foreign Key connections
     public ICollection<UserRole>? UserRoles { get; set; }
+    public ICollection<PlanWorkout>? PlanWorkouts { get; set; }
+    public ICollection<PlanWorkoutExercise>? PlanWorkoutExercises { get; set; }
+
 }

@@ -15,4 +15,6 @@ public class OptExerciseCategory
 
     // Navigation properties / Foreign Key connections
     public ICollection<OptExercise>? OptExercises { get; set; }
+    public ICollection<PlanWorkoutExercise>? PlanWorkoutExercises { get; set; }
+
 }
