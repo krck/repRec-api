@@ -49,11 +49,32 @@ public class PlanWorkoutExerciseController : ControllerBase
     #region MUTATION
 
     /// <summary>
+    /// POST: api/PlanWorkoutExercise
+    /// </summary>
+    [HttpPost]
+    [Authorize]
+    [RoleAccess(EnumRoles.Planner)]
+    public async Task<ActionResult<PlanWorkoutExercise>> PostPlanWorkoutExercise(PlanWorkoutExercise planWorkoutExercise)
+    {
+        // Access the HttpContext to check the User ID, based on the JWT Auth0 Token/Claims
+        string? httpUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == GlobalStaticVariables.Auth0UserIdClaim)?.Value;
+        if (string.IsNullOrWhiteSpace(httpUserId))
+            throw new ValidationException("User is invalid");
+
+        // Always overwrite the UserId
+        planWorkoutExercise.UserId = httpUserId;
+        var dbItem = _context.PlanWorkoutExercises.Add(planWorkoutExercise);
+        await _context.SaveChangesAsync();
+
+        return Ok(dbItem.Entity);
+    }
+
+    /// <summary>
     /// PUT: api/PlanWorkoutExercise/5
     /// </summary>
     [HttpPut("{id}")]
     [Authorize]
-    [RoleAccess(EnumRoles.Admin)]
+    [RoleAccess(EnumRoles.Planner)]
     public async Task<ActionResult<PlanWorkoutExercise>> PutPlanWorkoutExercise(int id, PlanWorkoutExercise planWorkoutExercise)
     {
         if (id != planWorkoutExercise.Id)
@@ -71,33 +92,38 @@ public class PlanWorkoutExerciseController : ControllerBase
         return Ok(planWorkoutExercise);
     }
 
+
+
+
     /// <summary>
-    /// POST: api/PlanWorkoutExercise
+    /// PUT: api/PlanWorkoutExercise/order
     /// </summary>
-    [HttpPost]
+    [HttpPut("order")]
     [Authorize]
-    [RoleAccess(EnumRoles.Admin)]
-    public async Task<ActionResult<PlanWorkoutExercise>> PostPlanWorkoutExercise(PlanWorkoutExercise planWorkoutExercise)
+    [RoleAccess(EnumRoles.Planner)]
+    public async Task<ActionResult<PlanWorkoutExercise>> PutPlanWorkoutExerciseOrder(PlanWorkoutExercise planWorkoutExercise)
     {
         // Access the HttpContext to check the User ID, based on the JWT Auth0 Token/Claims
         string? httpUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == GlobalStaticVariables.Auth0UserIdClaim)?.Value;
         if (string.IsNullOrWhiteSpace(httpUserId) || planWorkoutExercise.UserId != httpUserId)
             throw new ValidationException("User is invalid");
 
-        // Always overwrite the UserId
-        planWorkoutExercise.UserId = httpUserId;
-        var dbItem = _context.PlanWorkoutExercises.Add(planWorkoutExercise);
+        // If its a valid Entity, let EF handle the update automatically
+        _context.Entry(planWorkoutExercise).State = EntityState.Modified;
         await _context.SaveChangesAsync();
 
-        return Ok(dbItem.Entity);
+        return Ok(planWorkoutExercise);
     }
+
+
+
 
     /// <summary>
     /// DELETE: api/PlanWorkoutExercise/5
     /// </summary>
     [HttpDelete("{id}")]
     [Authorize]
-    [RoleAccess(EnumRoles.Admin)]
+    [RoleAccess(EnumRoles.Planner)]
     public async Task<ActionResult<PlanWorkoutExercise>> DeletePlanWorkoutExercise(int id)
     {
         var planWorkoutExercise = await _context.PlanWorkoutExercises.FindAsync(id);

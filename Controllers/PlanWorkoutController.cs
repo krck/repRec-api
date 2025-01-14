@@ -64,11 +64,33 @@ public class PlanWorkoutController : ControllerBase
     #region MUTATION
 
     /// <summary>
+    /// POST: api/PlanWorkout
+    /// </summary>
+    [HttpPost]
+    [Authorize]
+    [RoleAccess(EnumRoles.Planner)]
+    public async Task<ActionResult<PlanWorkout>> PostPlanWorkout(PlanWorkout planWorkout)
+    {
+        // Access the HttpContext to check the User ID, based on the JWT Auth0 Token/Claims
+        string? httpUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == GlobalStaticVariables.Auth0UserIdClaim)?.Value;
+        if (string.IsNullOrWhiteSpace(httpUserId))
+            throw new ValidationException("User is invalid");
+
+        // Always overwrite the UserId
+        planWorkout.UserId = httpUserId;
+        planWorkout.CreatedAt = DateTime.UtcNow;
+        var dbItem = _context.PlanWorkouts.Add(planWorkout);
+        await _context.SaveChangesAsync();
+
+        return Ok(dbItem.Entity);
+    }
+
+    /// <summary>
     /// PUT: api/PlanWorkout/5
     /// </summary>
     [HttpPut("{id}")]
     [Authorize]
-    [RoleAccess(EnumRoles.Admin)]
+    [RoleAccess(EnumRoles.Planner)]
     public async Task<ActionResult<PlanWorkout>> PutPlanWorkout(int id, PlanWorkout planWorkout)
     {
         if (id != planWorkout.Id)
@@ -87,33 +109,11 @@ public class PlanWorkoutController : ControllerBase
     }
 
     /// <summary>
-    /// POST: api/PlanWorkout
-    /// </summary>
-    [HttpPost]
-    [Authorize]
-    [RoleAccess(EnumRoles.Admin)]
-    public async Task<ActionResult<PlanWorkout>> PostPlanWorkout(PlanWorkout planWorkout)
-    {
-        // Access the HttpContext to check the User ID, based on the JWT Auth0 Token/Claims
-        string? httpUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == GlobalStaticVariables.Auth0UserIdClaim)?.Value;
-        if (string.IsNullOrWhiteSpace(httpUserId))
-            throw new ValidationException("User is invalid");
-
-        // Always overwrite the UserId
-        planWorkout.UserId = httpUserId;
-        planWorkout.CreatedAt = DateTime.UtcNow;
-        var dbItem = _context.PlanWorkouts.Add(planWorkout);
-        await _context.SaveChangesAsync();
-
-        return Ok(dbItem.Entity);
-    }
-
-    /// <summary>
     /// DELETE: api/PlanWorkout/5
     /// </summary>
     [HttpDelete("{id}")]
     [Authorize]
-    [RoleAccess(EnumRoles.Admin)]
+    [RoleAccess(EnumRoles.Planner)]
     public async Task<ActionResult<PlanWorkout>> DeletePlanWorkout(int id)
     {
         var planWorkout = await _context.PlanWorkouts.FindAsync(id);

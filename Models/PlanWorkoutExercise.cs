@@ -19,8 +19,8 @@ public class PlanWorkoutExercise
 
     // Navigation properties / Foreign Key connections
     public User? User { get; set; }
-    public required PlanWorkout PlanWorkout { get; set; }
-    public required OptExerciseCategory OptExerciseCategory { get; set; }
-    public required OptExercise OptExercise { get; set; }
+    public PlanWorkout? PlanWorkout { get; set; }
+    public OptExerciseCategory? OptExerciseCategory { get; set; }
+    public OptExercise? OptExercise { get; set; }
 
 }
