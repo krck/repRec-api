@@ -19,6 +19,10 @@ public class RepRecDbContext(DbContextOptions<RepRecDbContext> options) : DbCont
     public DbSet<RepRecApi.Models.Log> Logs { get; set; }
     public DbSet<RepRecApi.Models.LogLevel> LogLevels { get; set; }
 
+    // PLANNING Tables
+    public DbSet<PlanWorkout> PlanWorkouts { get; set; }
+    public DbSet<PlanWorkoutExercise> PlanWorkoutExercises { get; set; }
+
     // OPTIONS / Dropdown Tables
     public DbSet<OptExerciseCategory> OptExerciseCategories { get; set; }
     public DbSet<OptExercise> OptExercises { get; set; }
@@ -51,6 +55,32 @@ public class RepRecDbContext(DbContextOptions<RepRecDbContext> options) : DbCont
             .HasOne(e => e.OptExerciseCategory)
             .WithMany(c => c.OptExercises)
             .HasForeignKey(e => e.OptExerciseCategoryId);
+
+        modelBuilder.Entity<PlanWorkout>()
+            .HasOne(pw => pw.User)
+            .WithMany(u => u.PlanWorkouts)
+            .HasForeignKey(pw => pw.UserId);
+
+        modelBuilder.Entity<PlanWorkoutExercise>()
+            .HasOne(pwe => pwe.PlanWorkout)
+            .WithMany(pw => pw.PlanWorkoutExercises)
+            .HasForeignKey(pwe => pwe.PlanWorkoutId);
+
+        modelBuilder.Entity<PlanWorkoutExercise>()
+            .HasOne(pwe => pwe.OptExerciseCategory)
+            .WithMany(c => c.PlanWorkoutExercises)
+            .HasForeignKey(pwe => pwe.OptExerciseCategoryId);
+
+        modelBuilder.Entity<PlanWorkoutExercise>()
+            .HasOne(pwe => pwe.OptExercise)
+            .WithMany(e => e.PlanWorkoutExercises)
+            .HasForeignKey(pwe => pwe.OptExerciseId);
+
+        modelBuilder.Entity<PlanWorkoutExercise>()
+            .HasOne(pwe => pwe.User)
+            .WithMany(u => u.PlanWorkoutExercises)
+            .HasForeignKey(pwe => pwe.UserId);
+
 
         // Seed all initial/hardcoded values
         modelBuilder.Entity<Role>().HasData(

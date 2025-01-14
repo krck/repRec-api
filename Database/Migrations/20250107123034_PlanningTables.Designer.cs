@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RepRecApi.Database;
@@ -11,9 +12,11 @@ using RepRecApi.Database;
 namespace RepRecApi.Database.Migrations
 {
     [DbContext(typeof(RepRecDbContext))]
-    partial class RepRecDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250107123034_PlanningTables")]
+    partial class PlanningTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -238,9 +241,6 @@ namespace RepRecApi.Database.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
@@ -248,13 +248,7 @@ namespace RepRecApi.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("PlanWorkouts");
                 });
@@ -286,10 +280,6 @@ namespace RepRecApi.Database.Migrations
                     b.Property<int>("PlanWorkoutId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("OptExerciseCategoryId");
@@ -297,8 +287,6 @@ namespace RepRecApi.Database.Migrations
                     b.HasIndex("OptExerciseId");
 
                     b.HasIndex("PlanWorkoutId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("PlanWorkoutExercises");
                 });
@@ -397,17 +385,6 @@ namespace RepRecApi.Database.Migrations
                     b.Navigation("OptExerciseCategory");
                 });
 
-            modelBuilder.Entity("RepRecApi.Models.PlanWorkout", b =>
-                {
-                    b.HasOne("RepRecApi.Models.User", "User")
-                        .WithMany("PlanWorkouts")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("RepRecApi.Models.PlanWorkoutExercise", b =>
                 {
                     b.HasOne("RepRecApi.Models.OptExerciseCategory", "OptExerciseCategory")
@@ -428,19 +405,11 @@ namespace RepRecApi.Database.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("RepRecApi.Models.User", "User")
-                        .WithMany("PlanWorkoutExercises")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("OptExercise");
 
                     b.Navigation("OptExerciseCategory");
 
                     b.Navigation("PlanWorkout");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("RepRecApi.Models.UserRole", b =>
@@ -491,10 +460,6 @@ namespace RepRecApi.Database.Migrations
 
             modelBuilder.Entity("RepRecApi.Models.User", b =>
                 {
-                    b.Navigation("PlanWorkoutExercises");
-
-                    b.Navigation("PlanWorkouts");
-
                     b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
