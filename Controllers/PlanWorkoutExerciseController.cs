@@ -7,6 +7,7 @@ using RepRecApi.Common.Enums;
 using RepRecApi.Database;
 using RepRecApi.Models;
 using RepRecApi.Common;
+using RepRecApi.Models.DTOs;
 
 namespace RepRecApi.Controllers;
 
@@ -98,21 +99,42 @@ public class PlanWorkoutExerciseController : ControllerBase
     /// <summary>
     /// PUT: api/PlanWorkoutExercise/order
     /// </summary>
-    [HttpPut("order")]
+    [HttpPut("order/{planWorkoutId}")]
     [Authorize]
     [RoleAccess(EnumRoles.Planner)]
-    public async Task<ActionResult<PlanWorkoutExercise>> PutPlanWorkoutExerciseOrder(PlanWorkoutExercise planWorkoutExercise)
+    public async Task<ActionResult<PlanWorkoutExercise>> PutPlanWorkoutExerciseOrder(
+        int planWorkoutId,
+        [FromBody] OutDtoPlanWorkoutExerciseOrder[] planWorkoutExerciseOrders)
     {
-        // Access the HttpContext to check the User ID, based on the JWT Auth0 Token/Claims
+        // Get the User data
         string? httpUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == GlobalStaticVariables.Auth0UserIdClaim)?.Value;
-        if (string.IsNullOrWhiteSpace(httpUserId) || planWorkoutExercise.UserId != httpUserId)
+        if (string.IsNullOrWhiteSpace(httpUserId))
             throw new ValidationException("User is invalid");
 
-        // If its a valid Entity, let EF handle the update automatically
-        _context.Entry(planWorkoutExercise).State = EntityState.Modified;
-        await _context.SaveChangesAsync();
+        // Get all the PlanWorkoutExercises for the User and PlanWorkout
+        var allPlanWorkoutExercises = await _context.PlanWorkoutExercises
+            .Where(pw => pw.UserId == httpUserId && pw.PlanWorkoutId == planWorkoutId)
+            .ToListAsync();
 
-        return Ok(planWorkoutExercise);
+        foreach (var planWorkoutExerciseOrder in planWorkoutExerciseOrders)
+        {
+            // Validate that the User has access to all the PlanWorkoutExercises (skip, if unknown)
+            var planWorkoutExercise = allPlanWorkoutExercises.FirstOrDefault(pw => pw.Id == planWorkoutExerciseOrder.Id);
+            if (planWorkoutExercise == null)
+                continue;
+
+            // Update the Order of the PlanWorkoutExercises (if anything changed)
+            if (planWorkoutExercise.DayIndex == planWorkoutExerciseOrder.DayIndex &&
+                planWorkoutExercise.DayOrder == planWorkoutExerciseOrder.DayOrder)
+                continue;
+
+            planWorkoutExercise.DayIndex = planWorkoutExerciseOrder.DayIndex;
+            planWorkoutExercise.DayOrder = planWorkoutExerciseOrder.DayOrder;
+            _context.Entry(planWorkoutExercise).State = EntityState.Modified;
+        }
+
+        await _context.SaveChangesAsync();
+        return Ok(planWorkoutExerciseOrders);
     }
 
 
