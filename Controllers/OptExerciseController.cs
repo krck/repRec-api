@@ -52,6 +52,20 @@ public class OptExerciseController : ControllerBase
     #region MUTATION
 
     /// <summary>
+    /// POST: api/OptExercise
+    /// </summary>
+    [HttpPost]
+    [Authorize]
+    [RoleAccess(EnumRoles.Admin)]
+    public async Task<ActionResult<OptExercise>> PostOptExercise(OptExercise optExercise)
+    {
+        var dbItem = _context.OptExercises.Add(optExercise);
+        await _context.SaveChangesAsync();
+
+        return Ok(dbItem.Entity);
+    }
+
+    /// <summary>
     /// PUT: api/OptExercise/5
     /// </summary>
     [HttpPut("{id}")]
@@ -67,20 +81,6 @@ public class OptExerciseController : ControllerBase
         await _context.SaveChangesAsync();
 
         return Ok(optExercise);
-    }
-
-    /// <summary>
-    /// POST: api/OptExercise
-    /// </summary>
-    [HttpPost]
-    [Authorize]
-    [RoleAccess(EnumRoles.Admin)]
-    public async Task<ActionResult<OptExercise>> PostOptExercise(OptExercise optExercise)
-    {
-        var dbItem = _context.OptExercises.Add(optExercise);
-        await _context.SaveChangesAsync();
-
-        return Ok(dbItem.Entity);
     }
 
     /// <summary>
