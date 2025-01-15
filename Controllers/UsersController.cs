@@ -7,6 +7,7 @@ using RepRecApi.Common.Enums;
 using RepRecApi.Database;
 using RepRecApi.Models;
 using RepRecApi.Common;
+using RepRecApi.Models.DTOs;
 
 namespace RepRecApi.Controllers;
 
@@ -66,9 +67,9 @@ public class UsersController : ControllerBase
                 Email = user.Email,
                 EmailVerified = user.EmailVerified,
                 Nickname = user.Nickname,
-                SettingTimezone = user.SettingTimezone,
-                SettingWeightUnit = user.SettingWeightUnit,
-                SettingDistanceUnit = user.SettingDistanceUnit,
+                SettingTimezone = string.IsNullOrWhiteSpace(user.SettingTimezone) ? "Europe/Berlin" : user.SettingTimezone,
+                SettingWeightUnit = string.IsNullOrWhiteSpace(user.SettingWeightUnit) ? "kg" : user.SettingWeightUnit,
+                SettingDistanceUnit = string.IsNullOrWhiteSpace(user.SettingDistanceUnit) ? "km" : user.SettingDistanceUnit,
                 CreatedAt = DateTime.Now.Date.ToUniversalTime(),
                 UserRoles = new List<UserRole> {
                     new UserRole { UserId = user.Id, RoleId = (int)EnumRoles.User },
@@ -87,6 +88,38 @@ public class UsersController : ControllerBase
             dbUser.Nickname = user.Nickname;
             await _context.SaveChangesAsync();
         }
+
+        return Ok(dbUser);
+    }
+
+    /// <summary>
+    /// PUT: api/users/settings/{id}
+    /// 
+    /// Set User settings (Timezone, WeightUnit, DistanceUnit)
+    /// </summary>
+    [HttpPut("settings/{id}")]
+    [Authorize]
+    public async Task<ActionResult<User>> SetUserSettings([FromBody] InDtoUserSettings userSettings)
+    {
+        if (userSettings == null)
+            throw new ValidationException("User object is required");
+
+        // Access the HttpContext to check the User ID, based on the JWT Auth0 Token/Claims
+        // !!! EVERYONE CAN ACCESS THIS ENDPOINT BUT USERS CAN ONLY CHANGE THEIR OWN DATA !!!
+        string? httpUserId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == GlobalStaticVariables.Auth0UserIdClaim)?.Value;
+        if (httpUserId == null || httpUserId != userSettings.Id)
+            throw new ValidationException("User object is invalid");
+
+        // Get the requested User data
+        var dbUser = await _context.Users.FirstAsync(u => u.Id == userSettings.Id);
+        if (dbUser == null)
+            throw new ValidationException("User object is invalid");
+
+        // Lets trust the frontend to send only "changed" settings and always update
+        dbUser.SettingTimezone = userSettings.SettingTimezone;
+        dbUser.SettingWeightUnit = userSettings.SettingWeightUnit;
+        dbUser.SettingDistanceUnit = userSettings.SettingDistanceUnit;
+        await _context.SaveChangesAsync();
 
         return Ok(dbUser);
     }
