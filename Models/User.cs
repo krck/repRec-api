@@ -10,6 +10,9 @@ public class User
     public required string Email { get; set; }
     public bool EmailVerified { get; set; }
     public string? Nickname { get; set; }
+    public required string SettingTimezone { get; set; }
+    public required string SettingWeightUnit { get; set; }
+    public required string SettingDistanceUnit { get; set; }
     public required DateTime CreatedAt { get; set; }
 
     // Navigation properties / Foreign Key connections

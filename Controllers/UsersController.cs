@@ -66,6 +66,9 @@ public class UsersController : ControllerBase
                 Email = user.Email,
                 EmailVerified = user.EmailVerified,
                 Nickname = user.Nickname,
+                SettingTimezone = user.SettingTimezone,
+                SettingWeightUnit = user.SettingWeightUnit,
+                SettingDistanceUnit = user.SettingDistanceUnit,
                 CreatedAt = DateTime.Now.Date.ToUniversalTime(),
                 UserRoles = new List<UserRole> {
                     new UserRole { UserId = user.Id, RoleId = (int)EnumRoles.User },

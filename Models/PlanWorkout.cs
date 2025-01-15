@@ -12,6 +12,7 @@ public class PlanWorkout
     public required string UserId { get; set; }
     public required string Name { get; set; }
     public string? Description { get; set; }
+    public required bool IsShared { get; set; }
     public DateTime CreatedAt { get; set; }
 
     // Navigation properties / Foreign Key connections
