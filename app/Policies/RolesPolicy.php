@@ -2,11 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\Logs;
+use App\Models\Roles;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
-class LogsPolicy
+class RolesPolicy
 {
     /**
      * Determine whether the user can view any models.
@@ -19,7 +19,7 @@ class LogsPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Logs $logs): bool
+    public function view(User $user, Roles $roles): bool
     {
         return false;
     }
@@ -35,7 +35,7 @@ class LogsPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Logs $logs): bool
+    public function update(User $user, Roles $roles): bool
     {
         return false;
     }
@@ -43,7 +43,7 @@ class LogsPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Logs $logs): bool
+    public function delete(User $user, Roles $roles): bool
     {
         return false;
     }
@@ -51,7 +51,7 @@ class LogsPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Logs $logs): bool
+    public function restore(User $user, Roles $roles): bool
     {
         return false;
     }
@@ -59,7 +59,7 @@ class LogsPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Logs $logs): bool
+    public function forceDelete(User $user, Roles $roles): bool
     {
         return false;
     }

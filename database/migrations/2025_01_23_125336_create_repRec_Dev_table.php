@@ -70,7 +70,7 @@ return new class extends Migration
 
         Schema::create('Roles', function (Blueprint $table) {
             $table->integer('Id')->primary();
-            $table->text('Name');
+            $table->text('Name')->unique();
         });
 
         Schema::create('UserRoles', function (Blueprint $table) {

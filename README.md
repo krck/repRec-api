@@ -125,7 +125,7 @@ Lists the containers currently managed by the compose setup
 `docker-compose -f repRec-api/_docker/docker-compose.yml ps`
 
 
-# 3 Server Setup
+# 3 VPS Server Setup
 Setup the hosting environment (Hetzner in this case) on a VPS running Debian 12
 Server IPv4: 188.245.213.112
 Server IPv6: 2a01:4f8:1c1c:d852::/64
@@ -299,41 +299,115 @@ Authentication is done via Auth0 (free tier)
 ...
 
 
+# 5. PHP and Laravel
 
-# PHP Basics
+# 5.1 Setup Basics
 
+Follow the installation process of Laravel for Linux/Debian.
+Create a new Laravel project with all folders/structures in place.
+
+After the initial setup:
 Install all dependencies (similar to npm i)
-> composer install
+`composer install`
 
 Install specific dependency (here dbal only for DEV ENV)
-> composer require doctrine/dbal --dev
+`composer require doctrine/dbal --dev`
 
 Clear the local configuration Cache, and reload it
 (e.g. after changes to the .env file)
-> php artisan config:clear
-> php artisan config:cache
+`php artisan config:clear`
+`php artisan config:cache`
 
 Create a new Controller
-> php artisan make:controller xxxController
+`php artisan make:controller xxxController`
 
 Start the Server
-> php artisan serve
+`php artisan serve`
 
 Debugging
-> sudo apt install php-xdebug
-> Setup Xdebug Extensions in VSCode
+`sudo apt install php-xdebug`
 
+Setup Xdebug Extensions in VSCode
 - Find and update the PHP the ini file
-> php --ini
-> (using /etc/php/8.2/cli/php.ini)
+> `php --ini`
+> `(using /etc/php/8.2/cli/php.ini)`
 
-- Xdebug config in ini
-> [Xdebug]
-> zend_extension=xdebug.so
-> xdebug.mode=debug
-> xdebug.start_with_request=yes
-> xdebug.client_host=127.0.0.1
-> xdebug.client_port=9003
-> xdebug.log=/tmp/xdebug.log
+- `Xdebug config in ini`
+> `[Xdebug]`
+> `zend_extension=xdebug.so`
+> `xdebug.mode=debug`
+> `xdebug.start_with_request=yes`
+> `xdebug.client_host=127.0.0.1`
+> `xdebug.client_port=9003`
+> `xdebug.log=/tmp/xdebug.log`
 
 
+## 5.2 Laravel Folder Structure
+
+Entry Point: `public/index.php` (similar to the old Program.cs)
+App Setup: `bootstrap/app.php` (similar to the old Startup.cs)
+
+Service Container: `dependency injection container` (used to register/create DI resolutions. Mostly automatic)
+Service Provider: `(core) system services` (all kinds of application components, like database, routing, ...)
+
+### `app/`
+- **Main application logic.**
+  - `Http/Controllers/`: Handles request logic.
+  - `Http/Middleware/`: Filters requests.
+  - `Http/Requests/`: Validates input.
+  - `Models/`: Eloquent ORM models.
+
+### `bootstrap/`
+- Framework initialization (`app.php`).
+
+### `config/`
+- **Configuration files.**
+  - Examples: `app.php` (app settings), `database.php` (DB config).
+
+### `database/`
+- **Database-related files.**
+  - `migrations/`: Schema definitions.
+  - `seeders/`: Populate default data.
+  - `factories/`: Generate fake data.
+
+### `public/`
+- Entry point (`index.php`) and public assets.
+
+### `resources/`
+- **Views, assets, and language files.**
+  - `views/`: Blade templates.
+  - `lang/`: Localization.
+
+### `routes/`
+- **Endpoint routes.**
+  - Define routes in `routes/web.php` or `routes/api.php`.
+  - `web.php`: Routes for web (browser).
+  - `api.php`: Routes for API.
+
+### `storage/`
+- **Stores app files.**
+  - `logs/`: Logs.
+  - `framework/`: Cache, sessions.
+
+### `tests/`
+- **Automated tests.**
+  - `Feature/`: Tests for app features.
+  - `Unit/`: Tests for individual classes.
+
+### `vendor/`
+- Composer-managed dependencies.
+
+### **Environment Configuration**
+- `.env`: Holds environment-specific settings (e.g., DB, app URL).
+
+
+
+
+When running `php artisan make:model ABC --all`, numerous files are created:
+ - Migration file: Database table creation for ABC.
+ - Model: Eloquent model for interacting with the ABC table.
+ - Factory: Used for generating fake data (useful for testing).
+ - Seeder: Populates the table with initial data.
+ - Controller: Handles HTTP requests and interacts with the ABC model.
+ - Policy: Used for ABC-based authorization (optional for now).
+ - Resource: For formatting API responses (optional but useful for consistency).
