@@ -9,4 +9,18 @@ class Logs extends Model
 {
     /** @use HasFactory<\Database\Factories\LogsFactory> */
     use HasFactory;
+
+    protected $table = 'logs'; // Name of the table
+
+    protected $primaryKey = 'id'; // Primary key
+    protected $fillable = [
+        'log_level',
+        'timestamp',
+        'exception_type',
+        'message',
+        'stack_trace',
+        'source',
+        'user_id'
+    ];
+    public $timestamps = false; // Disable default timestamps
 }
