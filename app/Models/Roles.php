@@ -10,7 +10,7 @@ class Roles extends Model
     /** @use HasFactory<\Database\Factories\RolesFactory> */
     use HasFactory;
 
-    protected $table = 'Roles'; // Name of the table
+    protected $table = 'roles'; // Name of the table
 
     protected $primaryKey = 'id'; // Primary key
     protected $fillable = ['name']; // Mass-assignable fields
