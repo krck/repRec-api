@@ -2,11 +2,14 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Route;
 
 class AppServiceProvider extends ServiceProvider
 {
+    protected $namespace = 'App\Http\Controllers';
+
     /**
      * Register any application services.
      */
@@ -20,7 +23,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Force HTTPS for all routes on PROD
+        if (app()->environment('production')) {
+            URL::forceScheme('https');
+        }
     }
 
     protected function mapApiRoutes()

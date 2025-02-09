@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Foundation\Application;
+use App\Http\Middleware\SecurityHeaderMiddleware;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 
@@ -12,7 +13,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->api('auth', 'App\Http\Middleware\Authenticate');
+        $middleware->api('auth', 'App\Http\Middleware\AuthenticationMiddleware');
+        $middleware->append(SecurityHeaderMiddleware::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         // Create a custom context for the exceptions

@@ -3,9 +3,9 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\VersionController;
 use App\Http\Controllers\RolesController;
-use App\Http\Middleware\Authenticate;
+use App\Http\Controllers\VersionController;
+use App\Http\Middleware\AuthenticationMiddleware;
 
 Auth::shouldUse('auth0-api');
 
