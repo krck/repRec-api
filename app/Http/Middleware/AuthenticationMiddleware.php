@@ -6,7 +6,7 @@ use App\Exceptions\ApiException;
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
 use Illuminate\Http\Request;
 
-class Authenticate extends Middleware
+class AuthenticationMiddleware extends Middleware
 {
     /**
      * Laravel's default behavior in case of auth exceptions is to redirect to a login page
