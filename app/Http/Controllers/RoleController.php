@@ -2,24 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Roles;
+use App\Models\Role;
 use Illuminate\Http\JsonResponse;
-use App\Http\Requests\StoreRolesRequest;
-use App\Http\Requests\UpdateRolesRequest;
+use App\Http\Requests\StoreRoleRequest;
+use App\Http\Requests\UpdateRoleRequest;
 
-class RolesController extends Controller
+class RoleController extends Controller
 {
     // Get all roles
     public function index(): JsonResponse
     {
-        $roles = Roles::all();
+        $roles = Role::all();
         return response()->json($roles);
     }
 
     // Get role by id
     public function show($id): JsonResponse
     {
-        $role = Roles::find($id);
+        $role = Role::find($id);
         return response()->json($role);
     }
 }
