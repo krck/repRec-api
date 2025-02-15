@@ -2,7 +2,7 @@
 
 namespace App\Common\Enums;
 
-enum EnumRoles: int
+enum EnumRole: int
 {
     case Admin = 1;
     case Planner = 2;
