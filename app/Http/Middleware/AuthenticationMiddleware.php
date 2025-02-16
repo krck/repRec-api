@@ -43,7 +43,7 @@ class AuthenticationMiddleware extends Middleware
                 'email_verified' => $decodedPayload->email_verified ?? false,
             ];
 
-            $request->merge(['authUser' => $auth0User]);
+            $request->attributes->set('auth0_user', $auth0User);
         } else {
             throw new ApiException('Invalid token', Response::HTTP_UNAUTHORIZED);
         }

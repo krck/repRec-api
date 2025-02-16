@@ -6,6 +6,7 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Exceptions\ApiException;
+use App\Http\Requests\StoreUserRequest;
 use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends Controller
@@ -19,14 +20,24 @@ class UserController extends Controller
     }
 
     // POST my user (Create if not exists)
-    public function setUser(Request $request)
+    public function store(Request $request)
     {
         // Get user ID from auth token (Auth0 ID)
-        $authUser = $request->query('authUser');
+        $authUser = $request->attributes->get('auth0_user');
         $auth0Id = $authUser['id'];
 
         // Get validated user data from the request Body
-        $validUserData = $request->validated();
+        // $validUserData = $request->validated();
+        $validUserData = $request->validate([
+            'id' => 'required|string|unique:users,id',
+            'email' => 'required|email|unique:users,email',
+            'email_verified' => 'boolean',
+            'nickname' => 'nullable|string',
+            'setting_timezone' => 'required|string',
+            'setting_weight_unit' => 'required|string',
+            'setting_distance_unit' => 'required|string',
+        ]);
+
         if (empty($auth0Id) || $auth0Id != $validUserData['id'])
             throw new ApiException("User Id mismatch", Response::HTTP_UNPROCESSABLE_ENTITY);
 
