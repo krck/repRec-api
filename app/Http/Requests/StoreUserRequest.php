@@ -22,7 +22,13 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'id' => 'required|string|unique:users,id',
+            'email' => 'required|email|unique:users,email',
+            'email_verified' => 'boolean',
+            'nickname' => 'nullable|string',
+            'setting_timezone' => 'required|string',
+            'setting_weight_unit' => 'required|string',
+            'setting_distance_unit' => 'required|string',
         ];
     }
 }

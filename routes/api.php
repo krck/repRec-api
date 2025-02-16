@@ -20,5 +20,5 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/roles/{id}', [RoleController::class, 'show']);
     // User
     Route::get('/users', [UserController::class, 'index']);
-    Route::get('/users/{id}', [UserController::class, 'myUser']);
+    Route::get('/users/myUser', [UserController::class, 'myUser']);
 });
