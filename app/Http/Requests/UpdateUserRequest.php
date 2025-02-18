@@ -11,18 +11,18 @@ class UpdateUserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * Get the validation rules that apply to the PUT/UPDATE request
      */
     public function rules(): array
     {
         return [
-            //
+            'setting_timezone' => 'string|required',
+            'setting_weight_unit' => 'string|required',
+            'setting_distance_unit' => 'string|required',
         ];
     }
 }

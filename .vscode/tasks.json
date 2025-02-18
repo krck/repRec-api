@@ -5,10 +5,13 @@
             "label": "Serve Laravel",
             "type": "shell",
             "command": "php artisan serve",
+            "dependsOn": [
+                "Cleanup Laravel"
+            ],
             "problemMatcher": []
         },
         {
-            "label": "Refresh Laravel",
+            "label": "Cleanup Laravel",
             "type": "shell",
             "command": "php artisan config:clear && php artisan route:clear && composer dump-autoload && php artisan optimize",
             "problemMatcher": []

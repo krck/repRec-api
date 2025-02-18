@@ -7,5 +7,12 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 class UserRole extends Pivot
 {
     protected $table = 'user_roles';
-    protected $fillable = ['user_id', 'role_id'];
+    public $timestamps = true;
+
+    protected $fillable = [
+        'user_id',
+        'role_id',
+        'created_at',
+        'updated_at'
+    ];
 }
