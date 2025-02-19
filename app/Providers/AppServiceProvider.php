@@ -2,9 +2,10 @@
 
 namespace App\Providers;
 
+use Route;
+use App\Services\UserService;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
-use Route;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -15,7 +16,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Global UserService to store/retrieve user-roles
+        $this->app->singleton(UserService::class, function () {
+            return new UserService();
+        });
     }
 
     /**

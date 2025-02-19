@@ -42,7 +42,10 @@ class DatabaseLoggerHandler extends AbstractProcessingHandler
                 'message' => $record['message'] ?? null,
                 'stack_trace' => ($stackTrace != '-' ? $stackTrace : null),
                 'source' => 'repRec-api',
-                'user_id' => ($record['context']['user'] ?? $record['context']['userId']) ??  null,
+                // WHY PHP? WHY?!
+                // This throws an error:    'user_id' => ($record['context']['user'] ?? $record['context']['userId']) ??  null,
+                // This does not:           'user_id' => $record['context']['user'] ?? $record['context']['userId'] ??  null,
+                'user_id' => $record['context']['user'] ?? $record['context']['userId'] ??  null,
             ]);
         } catch (\Exception $e) {
             // In case DB logging fails, try logging to file

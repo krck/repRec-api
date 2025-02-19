@@ -1,13 +1,13 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Common\Enums\EnumRole;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VersionController;
-use App\Http\Middleware\AuthenticationMiddleware;
+use App\Http\Middleware\RoleAccessMiddleware as Roles;
 
 Auth::shouldUse('auth0-api');
 
@@ -17,7 +17,7 @@ Route::get('/version', [VersionController::class, 'showVersion'])->withoutMiddle
 // Endpoints with Authentication
 Route::group(['middleware' => 'auth'], function () {
     // Log
-    Route::get('/logs/{filterType}', [LogController::class, 'index']);
+    Route::get('/logs/{filterType}', [LogController::class, 'index'])->middleware(Roles::class . ':admin,user');;
     // Role
     Route::get('/roles', [RoleController::class, 'index']);
     Route::get('/roles/{id}', [RoleController::class, 'show']);

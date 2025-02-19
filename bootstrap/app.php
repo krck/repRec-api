@@ -13,8 +13,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->api('auth', 'App\Http\Middleware\AuthenticationMiddleware');
-        $middleware->append(SecurityHeaderMiddleware::class);
+        $middleware->api('auth', 'App\Http\Middleware\AuthenticationMiddleware');   // MUST be first
+        $middleware->append(SecurityHeaderMiddleware::class);                       // MUST be last
     })
     ->withExceptions(function (Exceptions $exceptions) {
         // Create a custom context for the exceptions

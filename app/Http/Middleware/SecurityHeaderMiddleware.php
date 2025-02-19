@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class SecurityHeaderMiddleware
@@ -28,16 +29,21 @@ class SecurityHeaderMiddleware
     {
         /** @var Response $response */
         $response = $next($request);
+        try {
+            // Update the API Response Headers
+            foreach ($this->headersToAdd as $key => $value) {
+                $response->headers->set($key, $value, true); // Replace existing => true
+            }
+            foreach ($this->headersToRemove as $key) {
+                $response->headers->remove($key);
+            }
 
-        // Update the API Response Headers
-        foreach ($this->headersToAdd as $key => $value) {
-            $response->headers->set($key, $value, true); // Replace existing => true
+            return $response;
+        } catch (\Throwable $th) {
+            // Middleware Exceptions: Log immediately and abort/fail with a "clean" response
+            Log::error("SecurityHeaderMiddleware: " . $th->getMessage());
+            abort(Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        foreach ($this->headersToRemove as $key) {
-            $response->headers->remove($key);
-        }
-
-        return $response;
     }
 
     #region PRIVATE FUNCTIONS
