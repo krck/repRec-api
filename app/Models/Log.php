@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Logs extends Model
+class Log extends Model
 {
-    /** @use HasFactory<\Database\Factories\LogsFactory> */
+    /** @use HasFactory<\Database\Factories\LogFactory> */
     use HasFactory;
 
     protected $table = 'logs'; // Name of the table

@@ -18,13 +18,17 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions) {
         // Create a custom context for the exceptions
-        // Extract: Exception Type (name), File and Line
-        // (user_id should also be set here, if possible)
-        $exceptions->context(fn($e) => [
-            'type' => $e instanceof Throwable ? get_class($e) : null,
-            'file' => $e instanceof Throwable ? $e->getFile() : null,
-            'line' => $e instanceof Throwable ? strval($e->getLine()) : null,
-        ]);
+        // Extract: Exception Type (name), File + Line and user from request
+        $exceptions->context(function ($e) {
+            $request = Request::instance();
+            $authUser = $request->attributes->get('auth0_user');
+            return [
+                'type' => $e instanceof Throwable ? get_class($e) : null,
+                'file' => $e instanceof Throwable ? $e->getFile() : null,
+                'line' => $e instanceof Throwable ? strval($e->getLine()) : null,
+                'user' => $authUser != null ? $authUser['id'] : null
+            ];
+        });
 
         // Automatic De-duplication, in case the same exception object is reported multiple times
         $exceptions->dontReportDuplicates();

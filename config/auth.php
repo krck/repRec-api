@@ -14,7 +14,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => env('AUTH_GUARD', 'web'),
+        'guard' => env('AUTH_GUARD', 'auth0-api'),
         'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
     ],
 
@@ -36,9 +36,15 @@ return [
     */
 
     'guards' => [
-        'web' => [
-            'driver' => 'session',
-            'provider' => 'users',
+        'auth0-session' => [
+            'driver' => 'auth0.authenticator',
+            'provider' => 'auth0-provider',
+            'configuration' => 'web',
+        ],
+        'auth0-api' => [
+            'driver' => 'auth0.authorizer',
+            'provider' => 'auth0-provider',
+            'configuration' => 'api',
         ],
     ],
 
@@ -60,6 +66,11 @@ return [
     */
 
     'providers' => [
+        'auth0-provider' => [
+            'driver' => 'auth0.provider',
+            'repository' => 'auth0.repository',
+        ],
+
         // 'users' => [
         //     'driver' => 'eloquent',
         //     'model' => env('AUTH_MODEL', App\Models\User::class),

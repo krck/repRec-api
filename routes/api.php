@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LogController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VersionController;
@@ -15,6 +16,8 @@ Route::get('/version', [VersionController::class, 'showVersion'])->withoutMiddle
 
 // Endpoints with Authentication
 Route::group(['middleware' => 'auth'], function () {
+    // Log
+    Route::get('/logs/{filterType}', [LogController::class, 'index']);
     // Role
     Route::get('/roles', [RoleController::class, 'index']);
     Route::get('/roles/{id}', [RoleController::class, 'show']);
